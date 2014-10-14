@@ -27,7 +27,7 @@ menu.addItem('Add tenant',
   [{'name': 'name', 'type': 'string'}, {'name': 'contact', 'type': 'string'}]
 );
 
-menu.addItem('Show tenants:', 
+menu.addItem('Show tenants', 
   function() {
     for (var i = 0; i <= people.length; i++) {
       if (people[i] instanceof app.Tenant){
@@ -64,18 +64,35 @@ menu.addItem('Show all units',
   }  
 );
 
-menu.addItem('(implement me) Show available units', 
+menu.addItem('Show available units', 
   function() {
-      console.log("Implement me");
+    for (var i = 0; i < building.units.length; i++){
+      if (building.units[i].tenant ===  null){
+        console.log("Available units" + "\n");
+        console.log("number:" + building.units[i].number + 
+                    "  sqft:" + building.units[i].sqft + 
+                    " rent: $" + building.units[i].rent);
+      } 
+    }
+
     } 
 );
 
-menu.addItem('(implement me) Add tenant reference', 
+menu.addItem('Add tenant reference', 
   function(tenant_name, ref_name, ref_contact) {
   	  // Note: Don't create a new Tenant. Pick a name of exiting tenant.
   	  // Find the corresponding tenant object and add reference. Reference
   	  // is a new Person object.
-      console.log("Implement me. Show error if tenant is unknown. Note: a reference is a person");
+      for(var i = 0; i<people.length ; i++){
+        if(people[i].constructor.name === "Tenant" &&
+           people[i].name === tenant_name){
+           var referencer = new app.Person(ref_name, ref_contact);
+           people.push(referencer);
+           people[i].addReference(referencer);
+        
+        } 
+      }
+      
     },
     null, 
     [{'name': 'tenant_name', 'type': 'string'},
@@ -83,43 +100,88 @@ menu.addItem('(implement me) Add tenant reference',
     {'name': 'ref_contact', 'type': 'string'}] 
 );
 
-menu.addItem('(implement me) Move tenant in unit', 
+menu.addItem('Move tenant in unit', 
   function(unit_number, tenant_name) {
   	  // Assumes that tenant and unit were previously created. 
       // Find tenant and unit objects, then use building's addTenant() function.
-      console.log("Implement me.");
+       var unitToAsign;
+       var tenantToRent;
+       for (var i = 0 ; i < building.units.length; i++){
+        if (building.units[i].available() &&
+            building.manager){
+        unitToAsign = building.units[i]}
+        } for (var j = 0; j < people.length; j++){
+             if(people[j].constructor.name === "Tenant" &&
+                people[j].name === tenant_name &&
+                people[j].references.length > 1){
+                  tenantToRent = people[j];
+              } 
+        } unitToAsign.tenant = tenantToRent;
     },
     null, 
     [{'name': 'unit_number', 'type': 'string'},
     {'name': 'tenant_name', 'type': 'string'}] 
 );
 
-menu.addItem('(implement me) Evict tenant', 
-  function(tenant_name) {
+menu.addItem('Evict tenant', 
+  function(unit_number , tenant_name) {
       // Similar to above, use building's removeTenant() function.
-      console.log("Implement me");
-    },
+      var unitToLeave;
+      for(var i = 0 ; i < building.units.length; i++){
+        if(building.units[i].tenant.name === tenant_name){
+           unitToLeave = building.units[i];
+           unitToLeave.tenant = null
+        }
+      }
+    
+  },
     null, 
-    [{'name': 'tenant_name', 'type': 'string'}] 
+    [{'name': 'unit_number', 'type': 'string'}, 
+    {'name': 'tenant_name', 'type': 'string'}] 
+
 );
 
-menu.addItem('(implement me) Show total sqft rented', 
+menu.addItem('Show total sqft rented', 
   function() {
-      console.log("Implement me");
-    } 
+    var sqftRented = 0
+    for (var i = 0 ; i < building.units.length; i++){
+      if (building.units[i].tenant !== null){
+        sqftRented = sqftRented + building.units[i].sqft
+      }
+    } console.log("Total sqft rented: " + sqftRented)
+      ;
+    }, null,
+    [] 
 );
 
-menu.addItem('(implement me) Show total yearly income', 
+menu.addItem('Show total yearly income', 
   function() {
       // Note: only rented units produce income
-      console.log("Implement me.");
-    } 
+      var yearlyIncome = 0;
+      for (var i = 0; i < building.units.length; i++){
+        if(building.units[i].tenant !== null){
+          yearlyIncome = yearlyIncome + (building.units[i].rent * 12)
+        }
+      } console.log ("Total yearly Income : $" + yearlyIncome)
+    }, null,
+    [] 
 );
 
-menu.addItem('(Add your own feature ...)', 
+menu.addItem('Monthly income per sqft rented', 
   function() {
-      console.log("Implement a feature that you find is useful");
-    } 
+      var incomePerSqft = 0;
+      var totalIncome = 0;
+      var totalSqftRented = 0
+      for (var i=0 ; i<building.units.length ; i++){
+        if(building.units[i].tenant !== null){
+          totalIncome = totalIncome + building.units[i].rent ;
+          totalSqftRented = totalSqftRented + building.units[i].sqft;
+
+        }
+      } incomePerSqft = totalIncome/totalSqftRented ;
+      console.log("Monthly income per sqft rented : $" + incomePerSqft); 
+    }, null,
+    [] 
 );
 
 // *******************************
