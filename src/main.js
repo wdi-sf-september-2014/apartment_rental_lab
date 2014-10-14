@@ -64,14 +64,22 @@ menu.addItem('Show all units',
   }  
 );
 
-menu.addItem('(implement me) Show available units', 
+menu.addItem('Show available units', 
   function() {
-      console.log("Implement me");
+    for(var i = building.units.length - 1; i >= 0; i--) {
+      if (building.units[i].tenant === null) {
+        console.log(" num: " + building.units[i].number + 
+                  " sqft: " + building.units[i].sqft +
+                  " rent: $" + building.units[i].rent);
+      }
+    }
     } 
 );
 
 menu.addItem('(implement me) Add tenant reference', 
   function(tenant_name, ref_name, ref_contact) {
+    for (var i = 0; i <= people.length; i++) {
+      if (people[i] instanceof app.Tenant && people[i].value === tenant_name){
   	  // Note: Don't create a new Tenant. Pick a name of exiting tenant.
   	  // Find the corresponding tenant object and add reference. Reference
   	  // is a new Person object.
