@@ -13,7 +13,6 @@ describe("Manager", function() {
   describe("has own props", function(){
     it("should include @name", function() {
       expect(jane.name).to.eql("Jane Doe");
-      return false;
     });
 
     it("should include @contact", function() {
